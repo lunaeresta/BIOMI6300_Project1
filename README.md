@@ -6,3 +6,5 @@ Folders present:
 - Analysis: contains R markdown file (code)
 - Data: contains raw data
 - Figures: contains plots
+
+Citation: Dangour, Alan D, et al. “Effects of Vitamin B-12 Supplementation on Neurologic and Cognitive Function in Older People: A Randomized Controlled TRIAL1,2.” The American Journal of Clinical Nutrition, vol. 102, no. 3, 2015, pp. 639–647., https://doi.org/10.3945/ajcn.115.110775. Link: https://academic.oup.com/ajcn/article/102/3/639/4564340
