@@ -1,0 +1,109 @@
+---
+title: "BIOMI6300_Project1"
+author: "Luna Eresta Jaya"
+date: "2023-02-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+This is an R Markdown document that contains Project 1 of the BIOMI6300 course.
+
+This project uses a simulated dataset based on an investigation of whether Vitamin B-12 improves a person’s cognitive ability. The simulation was based on summarized results from a randomized placebo-controlled trial in 7 general practices in South East England, UK. A total of 201 participants enrolled, which were divided into vitamin B-12 supplementation (referred to as the b12 group here) and placebo. Cognitive performance was measured after 30 days of supplementation by a verbal learning test.
+
+In this R markdown file, I did:
+1. Summarization of dataset
+2. Plotting of datasets including bar graphs of number of observations per groups, as well as boxplots and histograms to compare the distributions of the two groups
+3. T-test of dataset to determine significant difference in verbal learning tests between the two groups at a 95% confidence interval
+
+Citation: Dangour, Alan D, et al. “Effects of Vitamin B-12 Supplementation on Neurologic and Cognitive Function in Older People: A Randomized Controlled TRIAL1,2.” The American Journal of Clinical Nutrition, vol. 102, no. 3, 2015, pp. 639–647., https://doi.org/10.3945/ajcn.115.110775.
+Link: https://academic.oup.com/ajcn/article/102/3/639/4564340
+
+
+## Installing Packages
+
+```{r}
+# readxl package, to read excel files
+# install.packages("readxl")
+library(readxl)
+# dplyr package, to organize and summarize tables
+# install.packages("dplyr")
+library(dplyr)
+# ggplot2 package, to create 
+# install.packages("ggplot2")
+library(ggplot2)
+```
+
+
+## Load Vitamin B12 Study Dataset and Summarize it
+
+```{r}
+# Load the table
+b12_study_dataset <- read_excel("vit_b12_study_dataset.xlsx")
+
+# Look at the first few rows
+head(b12_study_dataset)
+
+# Summarize the table
+summary(b12_study_dataset)
+
+# Count the observations in each group
+# Save counts into a new table called group_counts
+group_counts <- b12_study_dataset %>% 
+  count(group, sort=TRUE)
+
+# Group by experimental group and summarize mean, median, range
+b12_study_dataset %>%
+  group_by(group) %>%
+  summarise(average = mean(test_result),
+            median = median(test_result),
+            range = max(test_result)-min(test_result))
+
+```
+
+
+## Creating Plots from My Data
+
+```{r}
+# Creating a figure with the number of participants per group
+figure_1_counts <- ggplot(group_counts, aes(x=group, y=n)) +
+  geom_bar(stat="identity") +
+  # labels
+  labs(y="Number of Participants (n)",
+       x="Experiment Group",
+       title="Number of Participants per Group")
+figure_1_counts
+ggsave("figure_1_counts.jpeg")
+
+
+# Creating a boxplot to compare the median and ranges of the two groups
+figure_2_boxplot <- ggplot(b12_study_dataset, aes(x=group, y=test_result, fill=group)) +
+  geom_boxplot() +
+  # dots on top of boxplot
+  geom_jitter(size=0.4, alpha=0.9)+
+  # labels
+  labs(y="Verbal Learning Test (n)",
+       x="Experiment Group",
+       title="Boxplot of Verbal Learning Test Results for B-12 and Placebo")
+figure_2_boxplot
+ggsave("figure_2_boxplot.jpeg")
+
+
+# Creating a histogram to compare the distributions of the two groups
+figure_3_histogram <- ggplot(data=b12_study_dataset, aes(x=test_result, color=group, fill=group)) +
+  # add histogram with density as y axis
+  geom_histogram(aes(y=..density..), alpha=0.5, position="identity") +
+  # add a smooth density plot
+  geom_density(alpha=0.6) +
+  # labels
+  labs(y="Density",
+       x="Verbal Learning Test (n)",
+       title="Histogram of Verbal Learning Test Results for B-12 and Placebo") +
+  theme_light()
+figure_3_histogram
+ggsave("figure_3_histogram.jpeg")
+```
